@@ -1,7 +1,7 @@
-icis-windows
+ifunky-windows
 =======
 
-The "icis-windows" module provides a selection of helpers for common administrative tasks on Windows.
+The Windows module provides a selection of helpers for common administrative tasks.
 
 Windows Classes
 ---------------
