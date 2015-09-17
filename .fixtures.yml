@@ -1,0 +1,11 @@
+fixtures:
+  forge_modules:
+          stdlib:
+              repo: "puppetlabs/stdlib"
+  repositories:
+      windows_env: "https://github.com/badgerious/puppet-windows-env.git"
+      download_file: "https://github.com/puppet-community/puppet-download_file.git"
+      powershell: "https://github.com/puppetlabs/puppetlabs-powershell.git"
+      stdlib: https://github.com/puppetlabs/puppetlabs-stdlib
+  symlinks:
+    windows: "#{source_dir}"

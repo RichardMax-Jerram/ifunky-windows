@@ -1,0 +1,35 @@
+{
+  "name":         "ifunky-windows",
+  "version":      "1.0.0",
+  "author":       "Dan Gibbons",
+  "license":      "MIT",
+  "summary":      "Module to manage common Windows administration tasks",
+  "source":       "https://github.com/ifunky/ifunky-windows",
+  "project_page": "https://github.com/ifunky/ifunky-windows",
+  "issues_url":   "https://github.com/ifunky/ifunky-windows/issues",
+  "tags": ["administration", "iis"],
+  "operatingsystem_support": [
+      {
+        "operatingsystem": "Windows",
+        "operatingsystemrelease": [ "2008 R2", "2012", "2012 R2" ]
+}
+],
+"dependencies": [
+{
+"name": "puppetlabs/stdlib",
+"version_requirement": ">= 4.4.0"
+},
+{
+"name": "puppetlabs/powershell",
+"version_requirement": ">= 1.0.4"
+},
+{
+"name": "opentable/download_file",
+"version_requirement": ">= 1.1.0"
+},
+{
+"name": "badgerious/windows_env",
+"version_requirement": ">= 2.2.1"
+}
+]
+}

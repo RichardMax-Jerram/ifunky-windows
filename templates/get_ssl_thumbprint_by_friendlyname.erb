@@ -1,0 +1,17 @@
+<%
+   require 'open3'
+
+   ssl_friendly_name =  "ICIS Testing Certificate"
+   script = <<-EOF
+         (Get-ChildItem -Path Cert:\\LocalMachine\\My | Where-Object {$_.FriendlyName -match '#{ssl_friendly_name}'}).Thumbprint
+   EOF
+
+   cmd = "powershell.exe -NoProfile -ExecutionPolicy RemoteSigned -Command \"#{script}\""
+
+   #stdout,stderr,status = Open3.capture3(cmd)
+   #ssl_thumbnail = stdout
+   #puts status
+   #puts stderr
+   ssl_thumbnail = @second_binding_ssl_thumbprint  #"966991C128FAADD1BA2174672F09D77A74EED7BF"
+-%>
+<%= ssl_thumbnail -%>
