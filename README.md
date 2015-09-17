@@ -3,11 +3,12 @@ ifunky-windows
 
 The Windows module provides a selection of helpers for common administrative tasks.
 
+
 Windows Classes
 ---------------
 ### `windows::winsxs`
 
-Uses the native Windows unzip functionality for unzipping files.
+Extracts winsxs zip file to a target folder.
 
 ```windows:winsxs
 windows::winsxs { 'ISO Source':
