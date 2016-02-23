@@ -1,18 +1,14 @@
-# == Define: windows::unzip
+# == Class: windows::chocolatey
 #
-# Installs chocolatey
+# Installs chocolatey using a modified script that can go through a proxy server
 #
 # === Parameters
 #
-# [*destination*]
-#  Required, the destination directory to extract the files into.
-#
 # [*creates*]
-#  The `creates` parameter for the exec resource that extracts the ZIP file,
-#  default is undefined.
+#  The `creates` parameter for the exec resource where chocolated is installed by default
 #
 # [*timeout*]
-# Execution timeout in seconds for the unzip command; 0 disables timeout,
+# Execution timeout in seconds for the exec command; 0 disables timeout,
 # defaults to 300 seconds (5 minutes).
 #
 class windows::chocolatey(
