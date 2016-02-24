@@ -5,9 +5,34 @@ ifunky-windows
 
 The Windows module provides a selection of helpers for common administrative tasks.
 
+Initial Configuration
+---------------------
+In order to use the ifunky-windows module you will need to set some top level parameters that are used throughout the numerous classes.
+
+**Proxy Server**
+
+If you need to go through a proxy server then in your hiera data you should set the following:
+
+    windows::proxy_server: 'http://myproxyserver.net:3128'
+
 
 Windows Classes
 ---------------
+### `windows::chocolatey`
+
+Install Chocolatey which can optionally work through a proxy server.  
+If you've set the proxy base setting as described above then this class will create a chocolateyProxyLocation environment variable.
+
+> Example
+```windows::chocolatey
+class { windows::chocolatey : }
+```
+**Parameters within `windows::chocolatey`:**
+#####`version`
+  * Version of Chocolatey to install.  Defaults to 0.9.9.11.
+#####`timeout `
+  * Timeout for the chocolatey installation.  Defaults to 300 seconds (5 minutes)
+
 ### `windows::winsxs`
 
 Extracts winsxs zip file to a target folder.

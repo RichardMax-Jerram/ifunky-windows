@@ -15,21 +15,21 @@
 }
 ],
 "dependencies": [
-{
-"name": "puppetlabs/stdlib",
-"version_requirement": ">= 4.4.0"
-},
-{
-"name": "puppetlabs/powershell",
-"version_requirement": ">= 1.0.4"
-},
-{
-"name": "opentable/download_file",
-"version_requirement": ">= 1.1.0"
-},
-{
-"name": "badgerious/windows_env",
-"version_requirement": ">= 2.2.1"
-}
+  {
+  "name": "puppetlabs/stdlib",
+  "version_requirement": ">= 4.4.0"
+  },
+  {
+  "name": "puppetlabs/powershell",
+  "version_requirement": ">= 1.0.4"
+  },
+  {
+  "name": "opentable/download_file",
+  "version_requirement": ">= 1.1.0"
+  },
+  {
+  "name": "badgerious/windows_env",
+  "version_requirement": ">= 2.2.2"
+  }
 ]
 }

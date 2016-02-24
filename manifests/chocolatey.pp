@@ -1,27 +1,43 @@
 # == Class: windows::chocolatey
 #
-# Installs chocolatey using a modified script that can go through a proxy server
+# Installs Chocolatey using a modified script that can go through a proxy server.
 #
 # === Parameters
 #
-# [*creates*]
-#  The `creates` parameter for the exec resource where chocolated is installed by default
+# [*version*]
+#  Version of chocolately to install.  Defaults to 0.9.9.11
 #
 # [*timeout*]
-# Execution timeout in seconds for the exec command; 0 disables timeout,
-# defaults to 300 seconds (5 minutes).
+# Timeout for the chocolatey installation.  Defaults to 300 seconds (5 minutes)
 #
-class windows::chocolatey(
-  $creates = ['C:\Chocolatey','C:\ProgramData\chocolatey'],
+class windows::chocolatey (
+  $version = '0.9.9.11',
   $timeout = 300,
 ) {
 
   include windows
 
   $proxy_server = $windows::proxy_server
+  $creates      = ['C:\Chocolatey','C:\ProgramData\chocolatey']
 
   if (! $creates and ! $refreshonly and ! $unless){
     fail("Must set one of creates, refreshonly, or unless parameters.\n")
+  }
+
+  if(empty($version)){
+    fail("ERROR:: version was not specified")
+  }
+
+  windows_env { 'chocolateyProxyLocation':
+    ensure    => present,
+    value     => $proxy_server,
+    mergemode => clobber,
+  }
+
+  windows_env {'chocolateyVersion':
+    ensure    => present,
+    value     => $base::chocolateyVersion,
+    mergemode => clobber,
   }
 
   exec { 'install chocolatey':
@@ -32,5 +48,6 @@ class windows::chocolatey(
     provider    => powershell,
     timeout     => $timeout,
     logoutput   => true,
+    require     => [ Windows_env['chocolateyProxyLocation'], Windows_env['chocolateyVersion'] ]
   }
 }
