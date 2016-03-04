@@ -38,7 +38,7 @@ class windows::chocolatey (
 
   windows_env {'chocolateyVersion':
     ensure    => present,
-    value     => $base::chocolateyVersion,
+    value     => $version,
     mergemode => clobber,
   }
 

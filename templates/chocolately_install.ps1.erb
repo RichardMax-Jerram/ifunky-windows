@@ -23,12 +23,12 @@
 # NOTE: $env:chocolateyDownloadUrl does not work with $env:chocolateyVersion.
 # To use built-in compression (no 7zip download), please set $env:chocolateyUseWindowsCompression = 'true'
 
-$url = "https://packages.chocolatey.org/chocolatey.0.9.9.11.nupkg"
+$url = "http://packages.chocolatey.org/chocolatey.0.9.9.11.nupkg"
 
 $chocolateyVersion = $env:chocolateyVersion
 if (![string]::IsNullOrEmpty($chocolateyVersion)){
   Write-Output "Downloading specific version of Chocolatey: $chocolateyVersion"
-  $url = "https://packages.chocolatey.org/chocolatey.$chocolateyVersion.nupkg"
+  $url = "http://packages.chocolatey.org/chocolatey.$chocolateyVersion.nupkg"
 }
 
 $chocolateyDownloadUrl = $env:chocolateyDownloadUrl
@@ -106,7 +106,7 @@ if ($unzipMethod -eq '7zip') {
   # download 7zip
   Write-Output "Download 7Zip commandline tool"
   $7zaExe = Join-Path $tempDir '7za.exe'
-  Download-File 'https://chocolatey.org/7za.exe' "$7zaExe"
+  Download-File 'http://chocolatey.org/7za.exe' "$7zaExe"
 
   # unzip the package
   Write-Output "Extracting $file to $tempDir..."
