@@ -28,10 +28,8 @@ class windows (
   #validate_absolute_path($iis_web_folder, "ERROR: iis_web_folder must be a valid path")
   #validate_absolute_path($temp_dir, "ERROR: temp_dir must be a valid path")
 
-  if(!empty($proxy_server)){
-    validate_re($proxy_server, ['^(http(?:s)?\:\/\/[a-zA-Z0-9]+(?:(?:\.|\-)[a-zA-Z0-9]+)+(?:\:\d+)?(?:\/[\w\-]+)*(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$'], "ERROR: You must enter a proxy url in a valid format i.e. http://proxy.net:3128")
-  }
-
-  notify { "USING PROXY SERVER: $proxy_server":}
+  #if(!empty($proxy_server)){
+  #  validate_re($proxy_server, ['^(http(?:s)?\:\/\/[a-zA-Z0-9]+(?:(?:\.|\-)[a-zA-Z0-9]+)+(?:\:\d+)?(?:\/[\w\-]+)*(?:\/?|\/\w+\.[a-zA-Z]{2,4}(?:\?[\w]+\=[\w\-]+)?)?(?:\&[\w]+\=[\w\-]+)*)$'], "ERROR: You must enter a proxy url in a valid format i.e. http://proxy.net:3128")
+  #}
 
 }

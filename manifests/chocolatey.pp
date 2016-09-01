@@ -28,17 +28,15 @@ class windows::chocolatey (
     fail("ERROR:: version was not specified")
   }
 
-  if (!empty($proxy_server)){
-    windows_env { 'chocolateyProxyLocation':
-      ensure    => present,
-      value     => $proxy_server,
-      mergemode => clobber,
-    }
-  }
-
   windows_env {'chocolateyVersion':
     ensure    => present,
     value     => $version,
+    mergemode => clobber,
+  }
+
+  windows_env { 'chocolateyProxyLocation':
+    ensure    => present,
+    value     => $proxy_server,
     mergemode => clobber,
   }
 
