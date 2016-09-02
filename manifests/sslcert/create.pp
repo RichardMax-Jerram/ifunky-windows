@@ -29,7 +29,7 @@ define windows::sslcert::create (
 
   file { "New-SelfSignedCertificateEx.ps1":
     ensure  => present,
-    path    => "C:\\temp\\New-SelfSignedCertificateEx.ps1",
+    path    => "C:\windows\\temp\\New-SelfSignedCertificateEx.ps1",
     content => file('windows/New-SelfSignedCertificateEx.ps1'),
   }
 

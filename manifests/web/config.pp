@@ -14,7 +14,10 @@
 #  }
 #
 class windows::web::config (
-  $site_def_name = '',
+  $site_def_name    = '',
+  $ssl_create_cert  = true,
+  $ssl_subject      = 'ifunky.net',
+  $ssl_name         = 'Local Certificate'
 ) {
 
   include windows
@@ -29,9 +32,11 @@ class windows::web::config (
   validate_hash($websites)
   create_resources('windows::web::createsite', $websites)
 
-  windows::sslcert::create { 'Create cert':
-    subject       => 'CN=icis.com',
-    friendlyName  => 'ICIS Testing Certificate',
+  if ($ssl_create_cert) {
+    windows::sslcert::create { 'Create cert':
+      subject       => "CN=$ssl_subject",
+      friendlyName  => "$ssl_name",
+    }
   }
 
 }

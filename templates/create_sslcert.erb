@@ -1,2 +1,2 @@
-. "c:\Temp\New-SelfSignedCertificateEx.ps1"
+. "c:\Windows\Temp\New-SelfSignedCertificateEx.ps1"
 New-SelfsignedCertificateEx -Subject "<%= @subject%>" -EKU "Server Authentication", "Client authentication" -StoreLocation "LocalMachine" -IsCA $false -FriendlyName "<%= @friendlyName%>"
