@@ -43,7 +43,6 @@ class windows::chocolatey (
   exec { 'install chocolatey':
     command     => template('windows/chocolately_install.ps1.erb'),
     creates     => $creates,
-    refreshonly => $refreshonly,
     unless      => $unless,
     provider    => powershell,
     timeout     => $timeout,
