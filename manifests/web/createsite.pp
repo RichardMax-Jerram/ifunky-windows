@@ -98,7 +98,7 @@ define windows::web::createsite (
   # $second_binding_ssl_friendly_name
     #$ssl_thumbprint = clean_string(template("windows/get_ssl_thumbprint_by_friendlyname.erb"))
 
-    notify { "+_+_+_+THUMBPRINT_$second_binding_protocol-$ssl_thumbprint":}
+    #notify { "+_+_+_+THUMBPRINT_$second_binding_protocol-$ssl_thumbprint":}
 
     iis::manage_binding { "${second_binding_host_header}-port-${second_binding_port}":
       site_name               => $site_name,
