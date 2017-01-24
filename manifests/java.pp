@@ -22,7 +22,7 @@ define windows::java (
   $ensure      = 'present',
   $destination = 'c:\\Program Files\\Java',
   $version     = '8',
-  $update      = '45',
+  $update      = '121',
   $base_url    = 'https://s3-eu-west-1.amazonaws.com/puppet-stuff/AppSoftware/Java',
   $arch        = undef,
   $type        = 'jre',
@@ -86,7 +86,7 @@ define windows::java (
   download_file { "Download Java $type" :
     url                   => $package_url,
     destination_directory => $windows::temp_dir,
-    proxyAddress          => $windows::proxy_server,
+    proxy_address         => $windows::proxy_server,
   }
 
   package { $java_package:

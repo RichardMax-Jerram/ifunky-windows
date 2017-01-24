@@ -11,7 +11,7 @@
 # Timeout for the chocolatey installation.  Defaults to 300 seconds (5 minutes)
 #
 class windows::chocolatey (
-  $version = '0.9.9.11',
+  $version = '0.10.3',
   $timeout = 300,
 ) {
 
