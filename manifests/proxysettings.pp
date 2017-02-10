@@ -21,7 +21,8 @@ class windows::proxysettings (
   $manage_env_vars       = true,
   $manage_machine_config = true,
   $proxy_server          = undef,
-  $proxy_exclusions      = undef
+  $proxy_exclusions      = undef,
+  $dotnet_folder            = 'C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\Config'
 ) {
 
   if(!empty($proxy_server)){
@@ -53,4 +54,32 @@ class windows::proxysettings (
     }
 
   }
+
+  $web_config_fullpath    = "${dotnet_folder}\\web.config"
+  $machine_config_fullpath    = "${dotnet_folder}\\machine.config"
+
+  if ($manage_machine_config) {
+    exec { 'Remove web.config default proxy settings' :
+      command   => "\$xmlFile = '${web_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;[void]\$xml.configuration.\"system.net\".RemoveChild(\$xml.configuration.\"system.net\".defaultProxy);\$xml.Save(\$xmlFile)",
+      onlyif    => "[xml]\$xml = Get-Content '${web_config_fullpath}'; if (\$xml.configuration.\"system.net\" -ne \$null) { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider => powershell,
+    }
+
+    exec { 'Add system.net section to machine.config' :
+      command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement('system.net');[void]\$xml.configuration.AppendChild(\$newElement);\$xml.Save(\$xmlFile)",
+      onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.configuration.\"system.net\" -ne \$null) { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider => powershell,
+    }
+
+    exec { 'Add default proxy element' :
+      command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement('defaultProxy');\$node=\$xml.SelectNodes('/configuration/system.net').AppendChild(\$newElement) | Out-Null;\$xml.Save(\$xmlFile)",
+      onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.configuration.\"system.net\".defaultProxy -ne \$null) { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider => powershell,
+    }
+
+  }
+
 }
