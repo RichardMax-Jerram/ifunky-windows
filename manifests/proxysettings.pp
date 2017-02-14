@@ -73,11 +73,32 @@ class windows::proxysettings (
       provider => powershell,
     }
 
-    exec { 'Add default proxy element' :
+    exec { 'Add defaultProxy element' :
       command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement('defaultProxy');\$node=\$xml.SelectNodes('/configuration/system.net').AppendChild(\$newElement) | Out-Null;\$xml.Save(\$xmlFile)",
       onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.configuration.\"system.net\".defaultProxy -ne \$null) { exit 1 } else { exit 0 }",
       logoutput => true,
       provider => powershell,
+    }
+
+    exec { 'Add proxy element' :
+      command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement('proxy');\$newElement.SetAttribute('bypassonlocal', 'true');\$node=\$xml.SelectNodes('/configuration/system.net/defaultProxy').AppendChild(\$newElement) | Out-Null;\$xml.Save(\$xmlFile)",
+      onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.configuration.\"system.net\".defaultProxy.proxy -ne \$null) { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider => powershell,
+    }
+
+    exec { 'Update default proxy address attribute' :
+      command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$xml.SelectNodes('/configuration/system.net/defaultProxy/proxy').SetAttribute(\"proxyaddress\", \"${proxy_server}\");\$xml.Save(\$xmlFile)",
+      onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.configuration.\"system.net\".defaultProxy.proxy.proxyaddress -eq '${proxy_server}') { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider => powershell,
+    }
+
+    exec { 'Add bypasslist element' :
+      command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement('bypasslist');\$node=\$xml.SelectNodes('/configuration/system.net/defaultProxy').AppendChild(\$newElement) | Out-Null;\$xml.Save(\$xmlFile)",
+      onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.configuration.\"system.net\".defaultProxy.bypasslist -ne \$null) { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider  => powershell,
     }
 
   }
