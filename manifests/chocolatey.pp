@@ -34,18 +34,22 @@ class windows::chocolatey (
     mergemode => clobber,
   }
 
-  windows_env { 'chocolateyProxyLocation':
-    ensure    => present,
-    value     => $proxy_server,
-    mergemode => clobber,
-  }
-
   exec { 'install chocolatey':
     command     => template('windows/chocolately_install.ps1.erb'),
     creates     => $creates,
     provider    => powershell,
     timeout     => $timeout,
     logoutput   => true,
+    notify      => Exec['refresh env vars'],
     require     => [ Windows_env['chocolateyProxyLocation'], Windows_env['chocolateyVersion'] ]
+  }
+
+  exec { 'add proxy to choco':
+    command     => "& choco config set proxy ${proxy_server}",
+    provider    => powershell,
+    timeout     => $timeout,
+    logoutput   => true,
+    refreshonly => true,
+    require     => Exec['install chocolatey']
   }
 }
