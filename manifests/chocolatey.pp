@@ -40,12 +40,15 @@ class windows::chocolatey (
     provider    => powershell,
     timeout     => $timeout,
     logoutput   => true,
-    notify      => Exec['refresh env vars'],
-    require     => [ Windows_env['chocolateyProxyLocation'], Windows_env['chocolateyVersion'] ]
+    notify      => Exec['add proxy to choco'],
+    require     => [ Windows_env['chocolateyVersion'] ]
   }
 
+  # When installing chocolatey with puppet the session won't pick up environment variables such as http_proxy even with
+  # calling refreshenv so we manage the proxy directly in the choo config file
+  #
   exec { 'add proxy to choco':
-    command     => "& choco config set proxy ${proxy_server}",
+    command     => "& C:\ProgramData\chocolatey\choco.exe config set proxy ${proxy_server}",
     provider    => powershell,
     timeout     => $timeout,
     logoutput   => true,
