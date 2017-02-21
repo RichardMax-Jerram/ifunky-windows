@@ -48,7 +48,7 @@ class windows::chocolatey (
   # calling refreshenv so we manage the proxy directly in the choo config file
   #
   exec { 'add proxy to choco':
-    command     => "& C:\ProgramData\chocolatey\choco.exe config set proxy ${proxy_server}",
+    command     => "& C:\\ProgramData\\chocolatey\\choco.exe config set proxy ${proxy_server}",
     provider    => powershell,
     timeout     => $timeout,
     logoutput   => true,
