@@ -35,7 +35,6 @@ class windows::machineconfig (
   if($manage_appsettings){
     file { $appsettings_fullpath:
       ensure  => 'file',
-      content => '<appSettings></appSettings>'
     }
 
     exec { 'Add app settings element with external source' :
@@ -50,7 +49,6 @@ class windows::machineconfig (
   if($manage_connectionstrings){
     file { $connectionstrings_fullpath:
       ensure  => 'file',
-      content => '<connectionStrings></connectionStrings>'
     }
 
     exec { 'Remove machine.config default connection string xml element' :
