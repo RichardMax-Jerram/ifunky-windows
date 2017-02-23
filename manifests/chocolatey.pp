@@ -5,54 +5,70 @@
 # === Parameters
 #
 # [*version*]
-#  Version of chocolately to install.  Defaults to 0.9.9.11
+#  Version of chocolately to install.  Defaults to 0.10.3
 #
-# [*timeout*]
-# Timeout for the chocolatey installation.  Defaults to 300 seconds (5 minutes)
+# [*download_url*]
+#  Default download URL for the Chocolatey package
+#
+# [*destination_path *]
+#  Destination path where to install Chocolatey
 #
 class windows::chocolatey (
-  $version = '0.10.3',
-  $timeout = 300,
+  $version          = '0.10.3',
+  $download_url     = 'https://chocolatey.org/api/v2/package/chocolatey',
+  $destination_path = 'c:\ProgramData\chocolatey',
 ) {
 
   include windows
 
-  $proxy_server = $windows::proxy_server
-  $creates      = ['C:\Chocolatey','C:\ProgramData\chocolatey']
-
-  if (! $creates and ! $refreshonly and ! $unless){
-    fail("Must set one of creates, refreshonly, or unless parameters.\n")
-  }
+  $temp_folder              = $::windows::temp_dir
+  $proxy_server             = $::windows::proxy_server
+  $choco_download_url       = "${download_url}/${version}"
+  $destination_for_download = 'c:\windows\temp\choco'
 
   if(empty($version)){
     fail("ERROR:: version was not specified")
   }
 
-  windows_env {'chocolateyVersion':
+  file { $destination_for_download:
+    ensure             => directory,
+  }
+
+  windows_env { 'ChocolateyInstall':
     ensure    => present,
-    value     => $version,
+    value     => $destination_path,
     mergemode => clobber,
   }
 
-  exec { 'install chocolatey':
-    command     => template('windows/chocolately_install.ps1.erb'),
-    creates     => $creates,
-    provider    => powershell,
-    timeout     => $timeout,
-    logoutput   => true,
-    notify      => Exec['add proxy to choco'],
-    require     => [ Windows_env['chocolateyVersion'] ]
+  download_file { 'Download Chocolaty' :
+    url                    => "${download_url}/${version}",
+    destination_directory  => $destination_for_download,
+    proxy_address          => $proxy_server,
+    require                => Windows_env['ChocolateyInstall']
   }
 
-  # When installing chocolatey with puppet the session won't pick up environment variables such as http_proxy even with
-  # calling refreshenv so we manage the proxy directly in the choo config file
-  #
-  exec { 'add proxy to choco':
-    command     => "& C:\\ProgramData\\chocolatey\\choco.exe config set proxy ${proxy_server}",
+  windows::unzip { 'Unzip choco':
+    zipfile     => "$destination_for_download\\${version}",
+    destination => $destination_for_download,
+    creates     => "${destination_for_download}\\tools\\chocolateyInstall.ps1",
+    require     => Download_file['Download Chocolaty']
+  }
+
+  exec { 'Install chocolatey':
+    command     => "& c:\\windows\\temp\\choco\\tools\\chocolateyInstall.ps1",
+    creates     => "$destination_path\choco.exe",
     provider    => powershell,
-    timeout     => $timeout,
+    logoutput   => true,
+    notify      => Exec['Add proxy to choco'],
+    require     => [ Windows::Unzip['Unzip choco'] ]
+  }
+
+  exec { 'Add proxy to choco':
+    command     => "& C:\\ProgramData\\chocolatey\\choco.exe config set proxy ${proxy_server}",
+    onlyif      => "if ([string]::IsNullOrEmpty('${proxy_server}') )  { exit 1 } else { exit 0 }",
+    provider    => powershell,
     logoutput   => true,
     refreshonly => true,
-    require     => Exec['install chocolatey']
+    require     => Exec['Install chocolatey']
   }
 }
