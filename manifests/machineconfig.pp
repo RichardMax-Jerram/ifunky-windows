@@ -37,7 +37,14 @@ class windows::machineconfig (
       ensure  => 'file',
     }
 
-    exec { 'Add app settings element with external source' :
+    exec { 'Add appSettings element if not exist' :
+      command   => "Add-Content '${appsettings_fullpath}' \"<appSettings>`n</appSettings>\"",
+      onlyif    => "[xml]\$xml = Get-Content '${appsettings_fullpath}'; if (\$xml.appSettings -ne \$null) { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider => powershell,
+    }
+
+    exec { 'Add appAettings element with external source' :
       command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement(\"appSettings\");\$newElement.SetAttribute(\"configSource\", \"${appsettings_filename}\");\$xml.configuration.AppendChild(\$newElement);\$xml.Save(\$xmlFile)",
       onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.configuration.appSettings -ne \$null) { exit 1 } else { exit 0 }",
       logoutput => true,
@@ -49,6 +56,13 @@ class windows::machineconfig (
   if($manage_connectionstrings){
     file { $connectionstrings_fullpath:
       ensure  => 'file',
+    }
+
+    exec { 'Add connectoinStrings element if not exist' :
+      command   => "Add-Content '${connectionstrings_fullpath}' \"<connectoinStrings>`n</connectoinStrings>\"",
+      onlyif    => "[xml]\$xml = Get-Content '${connectionstrings_fullpath}'; if (\$xml.connectoinStrings -ne \$null) { exit 1 } else { exit 0 }",
+      logoutput => true,
+      provider => powershell,
     }
 
     exec { 'Remove machine.config default connection string xml element' :
