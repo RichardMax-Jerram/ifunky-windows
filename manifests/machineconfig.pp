@@ -58,9 +58,9 @@ class windows::machineconfig (
       ensure  => 'file',
     }
 
-    exec { 'Add connectoinStrings element if not exist' :
-      command   => "Add-Content '${connectionstrings_fullpath}' \"<connectoinStrings>`n</connectoinStrings>\"",
-      onlyif    => "[xml]\$xml = Get-Content '${connectionstrings_fullpath}'; if (\$xml.connectoinStrings -ne \$null) { exit 1 } else { exit 0 }",
+    exec { 'Add connectionStrings element if not exist' :
+      command   => "Add-Content '${connectionstrings_fullpath}' \"<connectionStrings>`n</connectionStrings>\"",
+      onlyif    => "[xml]\$xml = Get-Content '${connectionstrings_fullpath}'; if (\$xml.connectionStrings -ne \$null) { exit 1 } else { exit 0 }",
       logoutput => true,
       provider => powershell,
     }
