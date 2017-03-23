@@ -57,17 +57,19 @@ class windows::proxysettings (
       mergemode => clobber,
     }
 
-    windows_env { 'no_proxy':
-      ensure    => $ensure,
-      value     => $proxy_exclusions,
-      mergemode => clobber,
+    if !empty($proxy_exclusions) {
+      windows_env { 'no_proxy':
+        ensure    => $ensure,
+        value     => $proxy_exclusions,
+        mergemode => clobber,
+      }
     }
   }
 
   if ($manage_machine_config) {
     exec { 'Remove web.config default proxy settings' :
       command   => "\$xmlFile = '${web_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;[void]\$xml.configuration.\"system.net\".RemoveChild(\$xml.configuration.\"system.net\".defaultProxy);\$xml.Save(\$xmlFile)",
-      onlyif    => "[xml]\$xml = Get-Content '${web_config_fullpath}'; if (\$xml.configuration.\"system.net\" -ne \$null) { exit 1 } else { exit 0 }",
+      onlyif    => "[xml]\$xml = Get-Content '${web_config_fullpath}'; if (\$xml.configuration.\"system.net\" -eq \$null) { exit 1 } else { exit 0 }",
       logoutput => true,
       provider  => powershell,
     }
@@ -111,33 +113,33 @@ class windows::proxysettings (
       $bypass_list = hiera_array('proxy_bypass_list', { })
 
       $bypass_list.each | Hash $bypassitem | {
-          case $bypassitem[ensure] {
-            /^(present)$/ : {
-              exec { "add addresses to proxy bypass list: ${bypassitem[address]}" :
-                command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement('add');\$newElement.SetAttribute('address', '${bypassitem[address]}');\$node=\$xml.SelectNodes('/configuration/system.net/defaultProxy/bypasslist').AppendChild(\$newElement) | Out-Null;\$xml.Save(\$xmlFile)",
-                onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.selectSingleNode(\"/configuration/system.net/defaultProxy/bypasslist/add[@address='${bypassitem[address]}']\") -ne \$null) { exit 1 } else { exit 0 }",
-                logoutput => true,
-                provider  => powershell,
-              }
-            }
-            /^(absent)$/  : {
-              exec { "remove address from proxy bypass list: ${bypassitem[address]}" :
-                command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$node = \$xml.selectSingleNode(\"/configuration/system.net/defaultProxy/bypasslist/add[@address='${bypassitem[address]}']\");\$node.ParentNode.RemoveChild(\$node) | Out-Null;\$xml.Save(\$xmlFile)",
-                onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.selectSingleNode(\"/configuration/system.net/defaultProxy/bypasslist/add[@address='${bypassitem[address]}']\") -eq \$null) { exit 1 } else { exit 0 }",
-                logoutput => true,
-                provider  => powershell,
-              }
-            }
-            default       : { fail("the value ensure ensure must be present or absent not: ${ensure}") }
-          }
-        }
-    } else {
-      exec { "remove proxy from machine.config" :
-        command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$node = \$xml.selectSingleNode(\"/configuration/system.net/defaultProxy\");\$node.ParentNode.RemoveChild(\$node) | Out-Null;\$xml.Save(\$xmlFile)",
-        onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.selectSingleNode(\"/configuration/system.net/defaultProxy\") -eq \$null) { exit 1 } else { exit 0 }",
-        logoutput => true,
-        provider  => powershell,
-      }
+    case $bypassitem[ensure] {
+    /^(present)$/ : {
+    exec { "add addresses to proxy bypass list: ${bypassitem[address]}" :
+    command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$newElement=\$xml.CreateElement('add');\$newElement.SetAttribute('address', '${bypassitem[address]}');\$node=\$xml.SelectNodes('/configuration/system.net/defaultProxy/bypasslist').AppendChild(\$newElement) | Out-Null;\$xml.Save(\$xmlFile)",
+    onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.selectSingleNode(\"/configuration/system.net/defaultProxy/bypasslist/add[@address='${bypassitem[address]}']\") -ne \$null) { exit 1 } else { exit 0 }",
+    logoutput => true,
+    provider  => powershell,
     }
   }
+/^(absent)$/  : {
+  exec { "remove address from proxy bypass list: ${bypassitem[address]}" :
+    command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$node = \$xml.selectSingleNode(\"/configuration/system.net/defaultProxy/bypasslist/add[@address='${bypassitem[address]}']\");\$node.ParentNode.RemoveChild(\$node) | Out-Null;\$xml.Save(\$xmlFile)",
+    onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.selectSingleNode(\"/configuration/system.net/defaultProxy/bypasslist/add[@address='${bypassitem[address]}']\") -eq \$null) { exit 1 } else { exit 0 }",
+    logoutput => true,
+    provider  => powershell,
+  }
+}
+default       : { fail("the value ensure ensure must be present or absent not: ${ensure}") }
+}
+}
+} else {
+exec { "remove proxy from machine.config" :
+  command   => "\$xmlFile = '${machine_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;\$node = \$xml.selectSingleNode(\"/configuration/system.net/defaultProxy\");\$node.ParentNode.RemoveChild(\$node) | Out-Null;\$xml.Save(\$xmlFile)",
+  onlyif    => "[xml]\$xml = Get-Content '${machine_config_fullpath}'; if (\$xml.selectSingleNode(\"/configuration/system.net/defaultProxy\") -eq \$null) { exit 1 } else { exit 0 }",
+  logoutput => true,
+  provider  => powershell,
+}
+}
+}
 }
