@@ -56,7 +56,7 @@ class windows::chocolatey (
 
   exec { 'Install chocolatey':
     command     => "& c:\\windows\\temp\\choco\\tools\\chocolateyInstall.ps1",
-    creates     => "$destination_path\choco.exe",
+    creates     => "$destination_path\\choco.exe",
     provider    => powershell,
     logoutput   => true,
     notify      => Exec['Add proxy to choco'],

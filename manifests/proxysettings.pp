@@ -69,7 +69,7 @@ class windows::proxysettings (
   if ($manage_machine_config) {
     exec { 'Remove web.config default proxy settings' :
       command   => "\$xmlFile = '${web_config_fullpath}';[xml]\$xml = Get-Content \$xmlFile;[void]\$xml.configuration.\"system.net\".RemoveChild(\$xml.configuration.\"system.net\".defaultProxy);\$xml.Save(\$xmlFile)",
-      onlyif    => "[xml]\$xml = Get-Content '${web_config_fullpath}'; if (\$xml.configuration.\"system.net\" -eq \$null) { exit 1 } else { exit 0 }",
+      onlyif    => "[xml]\$xml = Get-Content '${web_config_fullpath}'; if (\$xml.configuration.\"system.net\".defaultProxy -eq \$null) { exit 1 } else { exit 0 }",
       logoutput => true,
       provider  => powershell,
     }
