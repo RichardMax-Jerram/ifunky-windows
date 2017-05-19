@@ -14,7 +14,7 @@
 #  Destination path where to install Chocolatey
 #
 class windows::chocolatey (
-  $version          = '0.10.3',
+  $version          = '0.10.5',
   $download_url     = 'https://chocolatey.org/api/v2/package/chocolatey',
   $destination_path = 'c:\ProgramData\chocolatey',
 ) {
